@@ -188,9 +188,9 @@
         const restartButton = document.getElementById('restartButton');
 
         // Game settings
-        const GAME_WIDTH = 600; // Internal drawing width
-        const GAME_HEIGHT = 600; // Internal drawing height
-        const GROUND_Y = GAME_HEIGHT - 70; // Ground position relative to new canvas height
+        const GAME_WIDTH = 600; // Internal drawing width (remains square)
+        const GAME_HEIGHT = 400; // Reduced internal drawing height
+        const GROUND_Y = GAME_HEIGHT - 50; // Adjusted ground position relative to new canvas height
 
         // Dino properties
         const DINO_WIDTH = 120;
@@ -496,5 +496,3 @@
     </script>
 </body>
 </html>
-
-
