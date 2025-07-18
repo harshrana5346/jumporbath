@@ -18,6 +18,7 @@
             font-family: 'Press Start 2P', cursive;
             color: #535353;
             padding: 0; /* Remove body padding */
+            touch-action: manipulation; /* Prevent default touch actions like zooming/panning on body */
         }
 
         .game-container {
@@ -27,10 +28,10 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             display: flex;
-            flex-direction: column;
-            justify-content: center; /* Center content vertically */
-            align-items: center;
-            padding: 10px; /* Reduced padding */
+            flex-direction: column; /* Arrange children in a column */
+            justify-content: flex-start; /* Align content to the top */
+            align-items: center; /* Center horizontally */
+            padding: 15px; /* Adjusted padding */
             box-sizing: border-box;
             width: 98vw; /* Maximize width */
             height: 98vh; /* Maximize height */
@@ -39,9 +40,23 @@
 
         h1 {
             color: #535353;
-            margin-bottom: 10px; /* Reduced margin */
-            font-size: 1.8em; /* Slightly larger title */
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 15px; /* Add space below title */
+            font-size: 1.8em;
             text-align: center;
+            line-height: 1.2; /* Adjust line height for better spacing */
+        }
+
+        .game-info {
+            /* Removed absolute positioning */
+            position: relative; /* Changed to relative to be in normal flow */
+            width: 100%; /* Take full width to control text alignment */
+            text-align: right; /* Keep score on the right */
+            font-size: 1.1em;
+            color: #535353;
+            margin-bottom: 15px; /* Space below score */
+            padding-right: 10px; /* Small padding from right edge */
+            box-sizing: border-box;
         }
 
         canvas {
@@ -49,20 +64,10 @@
             border: 2px solid #535353;
             border-radius: 10px;
             display: block;
-            touch-action: manipulation; /* Prevent default touch actions like zooming */
+            touch-action: manipulation;
             flex-grow: 1; /* Allow canvas to grow and take available space */
             max-width: 100%; /* Ensure it doesn't overflow */
             max-height: 100%; /* Ensure it doesn't overflow */
-        }
-
-        .game-info {
-            position: absolute;
-            top: 20px; /* Adjusted position */
-            right: 20px; /* Adjusted position */
-            font-size: 1.1em; /* Slightly larger score text */
-            color: #535353;
-            text-align: right;
-            z-index: 10;
         }
 
         .game-over-screen {
@@ -77,7 +82,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.8em; /* Larger game over text */
+            font-size: 1.8em;
             text-align: center;
             border-radius: 10px;
             z-index: 20;
@@ -92,20 +97,20 @@
         }
 
         .game-over-screen button {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 18px 36px; /* Larger button */
+            padding: 18px 36px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 1.2em; /* Larger button font */
-            margin-top: 25px; /* Increased margin */
+            font-size: 1.2em;
+            margin-top: 25px;
             cursor: pointer;
-            border-radius: 10px; /* More rounded corners */
+            border-radius: 10px;
             transition: background-color 0.3s ease, transform 0.1s ease;
             font-family: 'Press Start 2P', cursive;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* More prominent shadow */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
 
         .game-over-screen button:hover {
@@ -125,8 +130,7 @@
             }
             .game-info {
                 font-size: 0.9em;
-                top: 15px;
-                right: 15px;
+                margin-bottom: 10px; /* Adjust margin for smaller screens */
             }
             .game-over-screen {
                 font-size: 1.5em;
@@ -140,12 +144,11 @@
         @media (max-width: 480px) {
             h1 {
                 font-size: 1.2em;
-                margin-bottom: 5px;
+                margin-bottom: 8px;
             }
             .game-info {
                 font-size: 0.8em;
-                top: 10px;
-                right: 10px;
+                margin-bottom: 8px;
             }
             .game-over-screen {
                 font-size: 1.2em;
@@ -198,6 +201,7 @@
         const GRAVITY = 0.5;
         const JUMP_STRENGTH = -16;
         let isJumping = false;
+        let gameReady = false; // New flag to prevent immediate jump on load
 
         // Dino Image (your main running photo)
         const dinoImage = new Image();
@@ -266,16 +270,19 @@
 
             // Scale canvas element to fit container while maintaining aspect ratio
             const container = document.querySelector('.game-container');
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight - (document.querySelector('h1').offsetHeight + document.querySelector('.game-info').offsetHeight + 20); // Account for title, score, and some buffer
+            // Calculate available height for canvas by subtracting header/info height
+            const headerHeight = document.querySelector('h1').offsetHeight;
+            const infoHeight = document.querySelector('.game-info').offsetHeight;
+            const totalVerticalPadding = parseFloat(getComputedStyle(container).paddingTop) + parseFloat(getComputedStyle(container).paddingBottom);
+            const availableHeight = container.clientHeight - headerHeight - infoHeight - totalVerticalPadding - 10; // Extra buffer
 
             const aspectRatio = GAME_WIDTH / GAME_HEIGHT;
-            let newCanvasWidth = containerWidth;
-            let newCanvasHeight = containerWidth / aspectRatio;
+            let newCanvasWidth = container.clientWidth - (parseFloat(getComputedStyle(container).paddingLeft) + parseFloat(getComputedStyle(container).paddingRight));
+            let newCanvasHeight = newCanvasWidth / aspectRatio;
 
-            if (newCanvasHeight > containerHeight) {
-                newCanvasHeight = containerHeight;
-                newCanvasWidth = containerHeight * aspectRatio;
+            if (newCanvasHeight > availableHeight) {
+                newCanvasHeight = availableHeight;
+                newCanvasWidth = availableHeight * aspectRatio;
             }
 
             canvas.style.width = `${newCanvasWidth}px`;
@@ -432,11 +439,17 @@
             lastObstacleTime = 0;
             gameOverScreen.classList.remove('active');
             isCollidingDisplayingImage = false;
+            gameReady = false; // Reset gameReady flag
 
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
             gameLoop();
+
+            // Set gameReady to true after a short delay to prevent immediate jump
+            setTimeout(() => {
+                gameReady = true;
+            }, 500); // 500ms delay
         }
 
         function endGame() {
@@ -458,13 +471,12 @@
 
         // --- Event Listeners ---
         function handleJump() {
-            if (!isJumping && !gameOver) {
+            if (gameReady && !isJumping && !gameOver) { // Only allow jump if game is ready
                 isJumping = true;
                 dinoVelocityY = JUMP_STRENGTH;
             }
         }
 
-        // Changed event listener from canvas to document.body
         document.body.addEventListener('click', handleJump);
         document.body.addEventListener('touchstart', handleJump);
 
@@ -484,4 +496,5 @@
     </script>
 </body>
 </html>
+
 
