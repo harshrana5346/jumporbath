@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dino Run</title>
+    <title>Skip Bath</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
@@ -14,9 +14,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100vh; /* Ensure body takes full viewport height */
             font-family: 'Press Start 2P', cursive;
             color: #535353;
+            padding: 0; /* Remove body padding */
         }
 
         .game-container {
@@ -27,17 +28,19 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* Center content vertically */
             align-items: center;
-            padding: 20px;
+            padding: 10px; /* Reduced padding */
             box-sizing: border-box;
-            max-width: 90vw; /* Responsive width */
-            max-height: 90vh; /* Responsive height */
+            width: 98vw; /* Maximize width */
+            height: 98vh; /* Maximize height */
+            margin: 1vw; /* Small margin to avoid touching edges on some devices */
         }
 
         h1 {
             color: #535353;
-            margin-bottom: 20px;
-            font-size: 1.5em; /* Responsive font size */
+            margin-bottom: 10px; /* Reduced margin */
+            font-size: 1.8em; /* Slightly larger title */
             text-align: center;
         }
 
@@ -47,13 +50,16 @@
             border-radius: 10px;
             display: block;
             touch-action: manipulation; /* Prevent default touch actions like zooming */
+            flex-grow: 1; /* Allow canvas to grow and take available space */
+            max-width: 100%; /* Ensure it doesn't overflow */
+            max-height: 100%; /* Ensure it doesn't overflow */
         }
 
         .game-info {
             position: absolute;
-            top: 30px;
-            right: 30px;
-            font-size: 1em;
+            top: 20px; /* Adjusted position */
+            right: 20px; /* Adjusted position */
+            font-size: 1.1em; /* Slightly larger score text */
             color: #535353;
             text-align: right;
             z-index: 10;
@@ -71,7 +77,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.5em;
+            font-size: 1.8em; /* Larger game over text */
             text-align: center;
             border-radius: 10px;
             z-index: 20;
@@ -89,81 +95,82 @@
             background-color: #4CAF50; /* Green */
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 18px 36px; /* Larger button */
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 1em;
-            margin-top: 20px;
+            font-size: 1.2em; /* Larger button font */
+            margin-top: 25px; /* Increased margin */
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px; /* More rounded corners */
             transition: background-color 0.3s ease, transform 0.1s ease;
             font-family: 'Press Start 2P', cursive;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* More prominent shadow */
         }
 
         .game-over-screen button:hover {
             background-color: #45a049;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         .game-over-screen button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
             h1 {
+                font-size: 1.5em;
+            }
+            .game-info {
+                font-size: 0.9em;
+                top: 15px;
+                right: 15px;
+            }
+            .game-over-screen {
+                font-size: 1.5em;
+            }
+            .game-over-screen button {
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
                 font-size: 1.2em;
+                margin-bottom: 5px;
             }
             .game-info {
                 font-size: 0.8em;
-                top: 15px;
-                right: 15px;
+                top: 10px;
+                right: 10px;
             }
             .game-over-screen {
                 font-size: 1.2em;
             }
             .game-over-screen button {
                 padding: 10px 20px;
-                font-size: 0.8em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1em;
-                margin-bottom: 10px;
-            }
-            .game-info {
-                font-size: 0.7em;
-                top: 10px;
-                right: 10px;
-            }
-            .game-over-screen {
-                font-size: 1em;
-            }
-            .game-over-screen button {
-                padding: 8px 15px;
-                font-size: 0.7em;
+                font-size: 0.9em;
             }
             .game-container {
-                padding: 10px;
+                padding: 5px;
+                margin: 0.5vw;
             }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>Dino Run</h1>
+        <h1>Skip Bath</h1>
         <div class="game-info">
-            Score: <span id="score">0</span>
+            Days without bath: <span id="score">0</span>
         </div>
         <canvas id="gameCanvas"></canvas>
         <div id="gameOverScreen" class="game-over-screen">
             <h2>GAME OVER</h2>
-            <p>Your Score: <span id="finalScore">0</span></p>
+            <p>Days without bath: <span id="finalScore">0</span></p>
             <button id="restartButton">Restart</button>
         </div>
     </div>
@@ -178,44 +185,40 @@
         const restartButton = document.getElementById('restartButton');
 
         // Game settings
-        const GAME_WIDTH = 600; // Adjusted for a square frame
-        const GAME_HEIGHT = 600; // Adjusted for a square frame
+        const GAME_WIDTH = 600; // Internal drawing width
+        const GAME_HEIGHT = 600; // Internal drawing height
         const GROUND_Y = GAME_HEIGHT - 70; // Ground position relative to new canvas height
 
         // Dino properties
-        const DINO_WIDTH = 120; // Further increased size for better visibility
-        const DINO_HEIGHT = 120; // Further increased size for better visibility
+        const DINO_WIDTH = 120;
+        const DINO_HEIGHT = 120;
         let dinoX = 50;
-        let dinoY = GROUND_Y - DINO_HEIGHT; // Initial position based on ground and dino height
+        let dinoY = GROUND_Y - DINO_HEIGHT;
         let dinoVelocityY = 0;
         const GRAVITY = 0.5;
-        const JUMP_STRENGTH = -16; // Adjusted jump strength to be approximately twice the dino's height
+        const JUMP_STRENGTH = -16;
         let isJumping = false;
 
         // Dino Image (your main running photo)
         const dinoImage = new Image();
-        // Set to your 'running.jpg' file. For best quality, ensure your 'running.jpg' is high resolution (e.g., 120x120 pixels or larger).
         dinoImage.src = 'running.jpg';
         let dinoImageLoaded = false;
 
         dinoImage.onload = () => {
             dinoImageLoaded = true;
-            // Ensure dino is positioned correctly after image loads
             dinoY = GROUND_Y - DINO_HEIGHT;
-            // If the game is already running, no need to restart, just ensure it draws
         };
 
         dinoImage.onerror = () => {
             console.error("Failed to load dino image (running.jpg). Using default shape.");
-            dinoImageLoaded = false; // Fallback to drawing shape if image fails
+            dinoImageLoaded = false;
         };
 
         // Collision Image for Dino (your fallen photo)
         const collisionImage = new Image();
-        // Set to your 'fallen.jpg' file. For best quality, ensure your 'fallen.jpg' is high resolution (e.g., 120x120 pixels or larger).
         collisionImage.src = 'fallen.jpg';
         let collisionImageLoaded = false;
-        let isCollidingDisplayingImage = false; // New flag to control collision image display
+        let isCollidingDisplayingImage = false;
 
         collisionImage.onload = () => {
             collisionImageLoaded = true;
@@ -228,7 +231,6 @@
 
         // Cactus Image
         const cactusImage = new Image();
-        // Set to your 'cactus.jpg' file. For best quality, ensure your 'cactus.jpg' is high resolution (e.g., 60x120 pixels or larger).
         cactusImage.src = 'cactus.jpg';
         let cactusImageLoaded = false;
 
@@ -241,16 +243,15 @@
             cactusImageLoaded = false;
         };
 
-
         // Obstacle properties
-        const OBSTACLE_WIDTH = 60; // Further increased size (maintaining 1:2 ratio with height)
-        const OBSTACLE_HEIGHT = 120; // Further increased size
+        const OBSTACLE_WIDTH = 60;
+        const OBSTACLE_HEIGHT = 120;
         const OBSTACLE_SPEED = 5;
-        const MIN_SPAWN_INTERVAL = 1000; // Minimum time between obstacles (ms)
-        const MAX_SPAWN_INTERVAL = 2500; // Maximum time between obstacles (ms)
+        const MIN_SPAWN_INTERVAL = 1000;
+        const MAX_SPAWN_INTERVAL = 2500;
         let obstacles = [];
         let lastObstacleTime = 0;
-        let nextSpawnInterval = MIN_SPAWN_INTERVAL; // Will be calculated dynamically
+        let nextSpawnInterval = MIN_SPAWN_INTERVAL;
 
         // Game state
         let score = 0;
@@ -265,8 +266,8 @@
 
             // Scale canvas element to fit container while maintaining aspect ratio
             const container = document.querySelector('.game-container');
-            const containerWidth = container.clientWidth - 40; // Account for padding
-            const containerHeight = container.clientHeight - 100; // Account for title and some buffer
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight - (document.querySelector('h1').offsetHeight + document.querySelector('.game-info').offsetHeight + 20); // Account for title, score, and some buffer
 
             const aspectRatio = GAME_WIDTH / GAME_HEIGHT;
             let newCanvasWidth = containerWidth;
@@ -290,7 +291,6 @@
 
         // --- Drawing Functions ---
 
-        // Draw the ground line
         function drawGround() {
             ctx.beginPath();
             ctx.moveTo(0, GROUND_Y);
@@ -300,7 +300,6 @@
             ctx.stroke();
         }
 
-        // Draw the dinosaur (now using an image or fallback shape)
         function drawDino() {
             let currentImage = dinoImage;
             let currentImageLoaded = dinoImageLoaded;
@@ -311,28 +310,24 @@
             }
 
             if (currentImageLoaded) {
-                // Draw the image if loaded successfully
                 ctx.drawImage(currentImage, dinoX, dinoY, DINO_WIDTH, DINO_HEIGHT);
             } else {
-                // Fallback to drawing a simple shape if image not loaded or failed
-                ctx.fillStyle = '#535353'; // Dark grey color
-                ctx.fillRect(dinoX, dinoY, DINO_WIDTH, DINO_HEIGHT);
-                ctx.fillRect(dinoX + DINO_WIDTH - 5, dinoY - 10, 15, 15); // Head
-                ctx.fillStyle = 'white';
-                ctx.fillRect(dinoX + DINO_WIDTH + 5, dinoY - 5, 3, 3); // Eye
                 ctx.fillStyle = '#535353';
-                ctx.fillRect(dinoX + 5, dinoY + DINO_HEIGHT, 10, 5); // Legs
+                ctx.fillRect(dinoX, dinoY, DINO_WIDTH, DINO_HEIGHT);
+                ctx.fillRect(dinoX + DINO_WIDTH - 5, dinoY - 10, 15, 15);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(dinoX + DINO_WIDTH + 5, dinoY - 5, 3, 3);
+                ctx.fillStyle = '#535353';
+                ctx.fillRect(dinoX + 5, dinoY + DINO_HEIGHT, 10, 5);
                 ctx.fillRect(dinoX + DINO_WIDTH - 15, dinoY + DINO_HEIGHT, 10, 5);
             }
         }
 
-        // Draw an obstacle (now using an image or fallback shape)
         function drawObstacle(obstacle) {
             if (cactusImageLoaded) {
                 ctx.drawImage(cactusImage, obstacle.x, obstacle.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
             } else {
-                // Fallback to drawing a simple shape if image not loaded or failed
-                ctx.fillStyle = '#4CAF50'; // Green color
+                ctx.fillStyle = '#4CAF50';
                 ctx.fillRect(obstacle.x, obstacle.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
                 ctx.fillRect(obstacle.x - 5, obstacle.y + 10, 10, 5);
                 ctx.fillRect(obstacle.x + OBSTACLE_WIDTH, obstacle.y + 15, 10, 5);
@@ -346,7 +341,6 @@
                 dinoY += dinoVelocityY;
                 dinoVelocityY += GRAVITY;
 
-                // Land on the ground
                 if (dinoY >= GROUND_Y - DINO_HEIGHT) {
                     dinoY = GROUND_Y - DINO_HEIGHT;
                     isJumping = false;
@@ -365,7 +359,6 @@
                     height: OBSTACLE_HEIGHT
                 });
                 lastObstacleTime = now;
-                // Calculate next random spawn interval
                 nextSpawnInterval = MIN_SPAWN_INTERVAL + Math.random() * (MAX_SPAWN_INTERVAL - MIN_SPAWN_INTERVAL);
             }
         }
@@ -374,11 +367,10 @@
             for (let i = 0; i < obstacles.length; i++) {
                 obstacles[i].x -= OBSTACLE_SPEED;
 
-                // Remove obstacles that are off-screen
                 if (obstacles[i].x + obstacles[i].width < 0) {
                     obstacles.splice(i, 1);
-                    i--; // Decrement index after removing an element
-                    score++; // Increment score for each obstacle passed
+                    i--;
+                    score++;
                     scoreDisplay.textContent = score;
                 }
             }
@@ -388,12 +380,10 @@
             for (let i = 0; i < obstacles.length; i++) {
                 const obs = obstacles[i];
 
-                // Simple AABB collision detection
                 if (dinoX < obs.x + obs.width &&
                     dinoX + DINO_WIDTH > obs.x &&
                     dinoY < obs.y + obs.height &&
                     dinoY + DINO_HEIGHT > obs.y) {
-                    // Collision detected
                     endGame();
                     return true;
                 }
@@ -407,7 +397,7 @@
 
         // --- Game Loop ---
         function gameLoop() {
-            if (gameOver && !isCollidingDisplayingImage) { // Stop if game over and collision image is done
+            if (gameOver && !isCollidingDisplayingImage) {
                 return;
             }
 
@@ -415,7 +405,6 @@
             drawGround();
             drawDino();
 
-            // Only update game elements if not in collision display mode
             if (!isCollidingDisplayingImage) {
                 updateDino();
                 spawnObstacle();
@@ -425,7 +414,7 @@
             obstacles.forEach(drawObstacle);
 
             if (!isCollidingDisplayingImage && checkCollision()) {
-                return; // Stop the loop if collision occurred and we're entering collision display
+                return;
             }
 
             animationFrameId = requestAnimationFrame(gameLoop);
@@ -437,14 +426,13 @@
             scoreDisplay.textContent = score;
             gameOver = false;
             isJumping = false;
-            dinoY = GROUND_Y - DINO_HEIGHT; // Reset dino position
+            dinoY = GROUND_Y - DINO_HEIGHT;
             dinoVelocityY = 0;
             obstacles = [];
             lastObstacleTime = 0;
             gameOverScreen.classList.remove('active');
-            isCollidingDisplayingImage = false; // Ensure this is false at start
+            isCollidingDisplayingImage = false;
 
-            // Start the game loop
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
@@ -453,29 +441,32 @@
 
         function endGame() {
             gameOver = true;
-            cancelAnimationFrame(animationFrameId); // Stop the main game loop
+            cancelAnimationFrame(animationFrameId);
 
-            isCollidingDisplayingImage = true; // Set flag to draw collision image
-            // Immediately redraw to show the collision image
+            isCollidingDisplayingImage = true;
             clearCanvas();
             drawGround();
             drawDino();
-            obstacles.forEach(drawObstacle); // Keep obstacles visible during collision animation
+            obstacles.forEach(drawObstacle);
 
             setTimeout(() => {
-                isCollidingDisplayingImage = false; // Stop drawing collision image
+                isCollidingDisplayingImage = false;
                 finalScoreDisplay.textContent = score;
-                gameOverScreen.classList.add('active'); // Show game over screen
-            }, 1000); // Display for 1 second
+                gameOverScreen.classList.add('active');
+            }, 1000);
         }
 
         // --- Event Listeners ---
         function handleJump() {
-            if (!isJumping && !gameOver) { // Prevent jumping if game is over or collision image is showing
+            if (!isJumping && !gameOver) {
                 isJumping = true;
                 dinoVelocityY = JUMP_STRENGTH;
             }
         }
+
+        // Changed event listener from canvas to document.body
+        document.body.addEventListener('click', handleJump);
+        document.body.addEventListener('touchstart', handleJump);
 
         document.addEventListener('keydown', (event) => {
             if (event.code === 'Space') {
@@ -483,14 +474,14 @@
             }
         });
 
-        // For touch and mouse clicks on the canvas
-        canvas.addEventListener('click', handleJump);
-        canvas.addEventListener('touchstart', handleJump);
-
         restartButton.addEventListener('click', startGame);
 
-        // Initial setup on window load
-        // The window.onload function already calls setCanvasSize and startGame
+        window.onload = function() {
+            setCanvasSize();
+            startGame();
+        };
+        window.addEventListener('resize', setCanvasSize);
     </script>
 </body>
 </html>
+
