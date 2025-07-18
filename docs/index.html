@@ -36,26 +36,26 @@
             width: 98vw; /* Maximize width */
             height: 98vh; /* Maximize height */
             margin: 1vw; /* Small margin to avoid touching edges on some devices */
+            gap: 10px; /* Add gap between flex items (title, info, canvas) */
         }
 
         h1 {
             color: #535353;
             margin-top: 0; /* Remove default top margin */
-            margin-bottom: 15px; /* Add space below title */
+            margin-bottom: 0; /* Let gap handle spacing */
             font-size: 1.8em;
             text-align: center;
-            line-height: 1.2; /* Adjust line height for better spacing */
+            line-height: 1.2;
         }
 
         .game-info {
-            /* Removed absolute positioning */
-            position: relative; /* Changed to relative to be in normal flow */
-            width: 100%; /* Take full width to control text alignment */
-            text-align: right; /* Keep score on the right */
+            position: relative;
+            width: 100%;
+            text-align: right;
             font-size: 1.1em;
             color: #535353;
-            margin-bottom: 15px; /* Space below score */
-            padding-right: 10px; /* Small padding from right edge */
+            margin-bottom: 0; /* Let gap handle spacing */
+            padding-right: 10px;
             box-sizing: border-box;
         }
 
@@ -65,9 +65,9 @@
             border-radius: 10px;
             display: block;
             touch-action: manipulation;
-            flex-grow: 1; /* Allow canvas to grow and take available space */
-            max-width: 100%; /* Ensure it doesn't overflow */
-            max-height: 100%; /* Ensure it doesn't overflow */
+            flex-grow: 1;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .game-over-screen {
@@ -94,6 +94,15 @@
         .game-over-screen.active {
             opacity: 1;
             visibility: visible;
+        }
+
+        .game-over-screen h2 {
+            margin-bottom: 15px; /* Added margin for spacing */
+        }
+
+        .game-over-screen p {
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 15px; /* Added margin for spacing */
         }
 
         .game-over-screen button {
@@ -130,7 +139,6 @@
             }
             .game-info {
                 font-size: 0.9em;
-                margin-bottom: 10px; /* Adjust margin for smaller screens */
             }
             .game-over-screen {
                 font-size: 1.5em;
@@ -139,16 +147,17 @@
                 padding: 12px 24px;
                 font-size: 1em;
             }
+            .game-over-screen h2, .game-over-screen p {
+                margin-bottom: 10px; /* Adjust margin for smaller screens */
+            }
         }
 
         @media (max-width: 480px) {
             h1 {
                 font-size: 1.2em;
-                margin-bottom: 8px;
             }
             .game-info {
                 font-size: 0.8em;
-                margin-bottom: 8px;
             }
             .game-over-screen {
                 font-size: 1.2em;
@@ -160,6 +169,10 @@
             .game-container {
                 padding: 5px;
                 margin: 0.5vw;
+                gap: 5px; /* Smaller gap on very small screens */
+            }
+            .game-over-screen h2, .game-over-screen p {
+                margin-bottom: 8px; /* Adjust margin for very small screens */
             }
         }
     </style>
@@ -188,9 +201,9 @@
         const restartButton = document.getElementById('restartButton');
 
         // Game settings
-        const GAME_WIDTH = 600; // Internal drawing width (remains square)
-        const GAME_HEIGHT = 400; // Reduced internal drawing height
-        const GROUND_Y = GAME_HEIGHT - 50; // Adjusted ground position relative to new canvas height
+        const GAME_WIDTH = 600; // Internal drawing width (square frame)
+        const GAME_HEIGHT = 600; // Internal drawing height (square frame)
+        const GROUND_Y = GAME_HEIGHT - 70; // Adjusted ground position relative to new canvas height
 
         // Dino properties
         const DINO_WIDTH = 120;
@@ -270,15 +283,17 @@
 
             // Scale canvas element to fit container while maintaining aspect ratio
             const container = document.querySelector('.game-container');
-            // Calculate available height for canvas by subtracting header/info height
             const headerHeight = document.querySelector('h1').offsetHeight;
             const infoHeight = document.querySelector('.game-info').offsetHeight;
-            const totalVerticalPadding = parseFloat(getComputedStyle(container).paddingTop) + parseFloat(getComputedStyle(container).paddingBottom);
-            const availableHeight = container.clientHeight - headerHeight - infoHeight - totalVerticalPadding - 10; // Extra buffer
+            const containerStyle = getComputedStyle(container);
+            const gapValue = parseFloat(containerStyle.gap);
+            const totalGapHeight = gapValue * 2;
+            const totalVerticalPadding = parseFloat(containerStyle.paddingTop) + parseFloat(containerStyle.paddingBottom);
+            const availableHeight = container.clientHeight - headerHeight - infoHeight - totalVerticalPadding - totalGapHeight;
 
-            const aspectRatio = GAME_WIDTH / GAME_HEIGHT;
-            let newCanvasWidth = container.clientWidth - (parseFloat(getComputedStyle(container).paddingLeft) + parseFloat(getComputedStyle(container).paddingRight));
-            let newCanvasHeight = newCanvasWidth / aspectRatio;
+            const aspectRatio = GAME_WIDTH / GAME_HEIGHT; // This will now be 1 (600/600)
+            let newCanvasWidth = container.clientWidth - (parseFloat(containerStyle.paddingLeft) + parseFloat(containerStyle.paddingRight));
+            let newCanvasHeight = newCanvasWidth / aspectRatio; // Will result in newCanvasWidth
 
             if (newCanvasHeight > availableHeight) {
                 newCanvasHeight = availableHeight;
